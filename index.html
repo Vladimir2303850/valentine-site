@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Будешь моей валентинкой?</title>
+  <style>
+    :root { --bg1:#0b1220; --bg2:#1b2a4a; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: #fff;
+      background: radial-gradient(1200px 800px at 20% 20%, #ff4d7d33, transparent 60%),
+                  radial-gradient(900px 700px at 80% 30%, #7c5cff33, transparent 55%),
+                  linear-gradient(160deg, var(--bg1), var(--bg2));
+      overflow: hidden;
+    }
+    .card {
+      width: min(720px, calc(100vw - 24px));
+      padding: 28px 22px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+      text-align: center;
+    }
+    h1 { margin: 0 0 10px; font-size: clamp(22px, 4vw, 34px); }
+    p  { margin: 0 0 18px; opacity: 0.9; font-size: 16px; line-height: 1.35; }
+    .stage {
+      position: relative;
+      margin: 18px auto 0;
+      width: min(560px, calc(100vw - 80px));
+      height: 240px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.06);
+      border: 1px dashed rgba(255,255,255,0.25);
+      overflow: hidden;
+    }
+    .btn {
+      position: absolute;
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transform: translate(-50%, -50%);
+      transition: transform .08s linear;
+      font-size: 16px;
+    }
+    #yesBtn { background: #ff3b6b; color: #fff; left: 35%; top: 55%; box-shadow: 0 10px 30px rgba(255,59,107,0.35); }
+    #noBtn  { background: #ffffff; color: #111; left: 65%; top: 55%; box-shadow: 0 10px 30px rgba(255,255,255,0.2); }
+    .msg { margin-top: 16px; font-size: 18px; font-weight: 650; min-height: 28px; }
+    .tiny { margin-top: 8px; font-size: 12px; opacity: 0.7; }
+
+    /* “страницы” */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* вторая страница */
+    .photo-wrap {
+      margin: 16px auto 0;
+      width: min(520px, 100%);
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      padding: 14px;
+      text-align: left;
+    }
+    .photo {
+      width: 100%;
+      aspect-ratio: 16/10;
+      border-radius: 14px;
+      object-fit: cover;
+      background: rgba(0,0,0,0.25);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: block;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .inline-btn {
+      padding: 10px 14px;
+      border: 0;
+      border-radius: 999px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #111;
+      background: #fff;
+    }
+    .inline-btn.primary {
+      color: #fff;
+      background: #ff3b6b;
+    }
+    input[type="file"] { display: none; }
+    .caption {
+      margin: 10px 0 0;
+      font-size: 14px;
+      opacity: .9;
+      line-height: 1.35;
+    }
+    .note {
+      margin: 12px 0 0;
+      font-size: 12px;
+      opacity: 0.7;
+      line-height: 1.35;
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <!-- PAGE 1 -->
+    <section class="page active" id="page1">
+      <h1>Будешь моей валентинкой? 💘</h1>
+      <p>У меня к тебе один важный вопрос.</p>
+
+      <div class="stage" id="stage">
+        <button class="btn" id="yesBtn" type="button">Да</button>
+        <button class="btn" id="noBtn" type="button">Нет</button>
+      </div>
+
+      <div class="msg" id="msg"></div>
+      <div class="tiny">Подсказка: кнопку «Нет» поймать сложно 🙂</div>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section class="page" id="page2">
+      <h1>Ура! ❤️</h1>
+      <p>С Днём святого Валентина! Я очень счастлив(а), что ты согласилась.</p>
+
+      <div class="photo-wrap">
+        <!-- Вариант А (хостинг): укажи src на файл в папке проекта -->
+        <!-- <img class="photo" id="photo" src="photo.jpg" alt="Наше фото"> -->
+
+        <!-- Вариант Б (локально/с телефона): фото загрузится через выбор файла -->
+        <img class="photo" id="photo" alt="Наше фото" />
+
+        <div class="row">
+          <label class="inline-btn" for="fileInput">Выбрать фото</label>
+          <button class="inline-btn primary" id="againBtn" type="button">Ещё раз “Да” 😄</button>
+          <input id="fileInput" type="file" accept="image/*" />
+        </div>
+
+        <p class="caption" id="caption">
+          (сюда можно вписать текст) Сегодня я хочу провести этот вечер с тобой.
+        </p>
+
+        <div class="note">
+          Если сайт будет на хостинге: положи фото рядом с HTML и раскомментируй строку
+          <b>src="photo.jpg"</b> (и назови файл так же). Если открываешь файл локально — просто нажми “Выбрать фото”.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // --- page switch ---
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    const showPage = (id) => {
+      for (const p of document.querySelectorAll('.page')) p.classList.remove('active');
+      document.getElementById(id).classList.add('active');
+      // небольшая прокрутка вверх (на телефоне удобно)
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // --- “Нет” убегает ---
+    const stage = document.getElementById('stage');
+    const noBtn  = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const msg = document.getElementById('msg');
+
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+
+    function moveNoButton(avoidX, avoidY) {
+      const rect = stage.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+      const pad = 16;
+
+      const w = rect.width, h = rect.height;
+
+      const minX = pad + btnRect.width / 2;
+      const maxX = w - pad - btnRect.width / 2;
+      const minY = pad + btnRect.height / 2;
+      const maxY = h - pad - btnRect.height / 2;
+
+      const curLeft = parseFloat(noBtn.style.left) || (w * 0.65);
+      const curTop  = parseFloat(noBtn.style.top)  || (h * 0.55);
+
+      let targetX = curLeft, targetY = curTop;
+
+      if (avoidX != null && avoidY != null) {
+        const dx = curLeft - avoidX;
+        const dy = curTop  - avoidY;
+        const len = Math.hypot(dx, dy) || 1;
+        const step = 120;
+        targetX = curLeft + (dx / len) * step;
+        targetY = curTop  + (dy / len) * step;
+      } else {
+        targetX = minX + Math.random() * (maxX - minX);
+        targetY = minY + Math.random() * (maxY - minY);
+      }
+
+      targetX = clamp(targetX, minX, maxX);
+      targetY = clamp(targetY, minY, maxY);
+
+      noBtn.style.left = targetX + "px";
+      noBtn.style.top  = targetY + "px";
+    }
+
+    function initPositions() {
+      const r = stage.getBoundingClientRect();
+      noBtn.style.left  = (r.width  * 0.65) + "px";
+      noBtn.style.top   = (r.height * 0.55) + "px";
+      yesBtn.style.left = (r.width  * 0.35) + "px";
+      yesBtn.style.top  = (r.height * 0.55) + "px";
+    }
+    window.addEventListener('resize', initPositions);
+    initPositions();
+
+    noBtn.addEventListener('mouseenter', () => moveNoButton());
+    stage.addEventListener('mousemove', (e) => {
+      const s = stage.getBoundingClientRect();
+      const mx = e.clientX - s.left;
+      const my = e.clientY - s.top;
+      const bx = parseFloat(noBtn.style.left);
+      const by = parseFloat(noBtn.style.top);
+      if (Math.hypot(mx - bx, my - by) < 110) moveNoButton(mx, my);
+    });
+
+    stage.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      if (!t) return;
+      const s = stage.getBoundingClientRect();
+      const mx = t.clientX - s.left;
+      const my = t.clientY - s.top;
+      const bx = parseFloat(noBtn.style.left);
+      const by = parseFloat(noBtn.style.top);
+      if (Math.hypot(mx - bx, my - by) < 140) moveNoButton(mx, my);
+    }, { passive: true });
+
+    noBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      moveNoButton();
+      msg.textContent = "Кажется, кнопка «Нет» сегодня не нажимается 🙂";
+    });
+
+    // Нажали “Да” => переход на страницу 2
+    yesBtn.addEventListener('click', () => {
+      showPage('page2');
+    });
+
+    // --- photo upload on page2 ---
+    const fileInput = document.getElementById('fileInput');
+    const photo = document.getElementById('photo');
+    const againBtn = document.getElementById('againBtn');
+
+    // Заглушка, если фото не задано: ставим приятный градиентный фон через data-uri не делаем,
+    // просто оставим пустым (будет фон блока).
+    photo.src = ""; // можно заменить на "photo.jpg" если хочешь дефолт
+
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files?.[0];
+      if (!file) return;
+      const url = URL.createObjectURL(file);
+      photo.src = url;
+    });
+
+    // Кнопка “Ещё раз” возвращает на первую страницу
+    againBtn.addEventListener('click', () => {
+      showPage('page1');
+      msg.textContent = "";
+    });
+  </script>
+</body>
+</html>
