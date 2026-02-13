@@ -78,21 +78,25 @@
       padding:14px;
       text-align:left;
     }
+
+    /* ВАЖНО: чтобы фото полностью помещалось, без обрезки */
     .photo{
       width:100%;
-      aspect-ratio:16/9;
+      aspect-ratio: 4 / 3;     /* под твое фото */
       border-radius:14px;
-      object-fit:cover;
-      background:rgba(0,0,0,0.25);
+      object-fit: contain;     /* НЕ обрезает, а помещает целиком */
+      object-position: center; /* центрирование */
+      background: rgba(0,0,0,0.25); /* фон полей, если будут пустые зоны */
       border:1px solid rgba(255,255,255,0.12);
       display:block;
     }
+
     .row{
       display:flex;
       gap:10px;
       margin-top:12px;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-end;
       flex-wrap:wrap;
     }
     .inline-btn{
@@ -108,8 +112,6 @@
       color:#fff;
       background:#ff3b6b;
     }
-    input[type="file"]{ display:none; }
-
     .caption{
       margin:10px 0 0;
       font-size:14px;
@@ -140,14 +142,11 @@
       <h1>Ура! ❤️</h1>
 
       <div class="photo-wrap">
-        <!-- Вариант для GitHub: положи фото рядом и назови photo.jpg -->
-        <!-- Если хочешь другое имя — поменяй src ниже -->
+        <!-- Положи фото рядом с index.html и назови photo.jpg -->
         <img class="photo" id="photo" src="photo.jpg" alt="Наше фото" />
 
         <div class="row">
-          <label class="inline-btn" for="fileInput">Выбрать фото</label>
           <button class="inline-btn primary" id="againBtn" type="button">Ещё раз “Да” 😊</button>
-          <input id="fileInput" type="file" accept="image/*" />
         </div>
 
         <p class="caption" id="caption">Шо ты, голова, согласилась, получается.</p>
@@ -156,18 +155,17 @@
   </div>
 
   <script>
-    // --- page switch ---
     const showPage = (id) => {
       for (const p of document.querySelectorAll('.page')) p.classList.remove('active');
       document.getElementById(id).classList.add('active');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // --- “Нет” убегает ---
     const stage = document.getElementById('stage');
     const noBtn  = document.getElementById('noBtn');
     const yesBtn = document.getElementById('yesBtn');
     const msg = document.getElementById('msg');
+    const againBtn = document.getElementById('againBtn');
 
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
@@ -200,14 +198,10 @@
         targetY = minY + Math.random() * (maxY - minY);
       }
 
-      targetX = clamp(targetX, minX, maxX);
-      targetY = clamp(targetY, minY, maxY);
-
-      noBtn.style.left = targetX + "px";
-      noBtn.style.top  = targetY + "px";
+      noBtn.style.left = clamp(targetX, minX, maxX) + "px";
+      noBtn.style.top  = clamp(targetY, minY, maxY) + "px";
     }
 
-    // ставим начальные координаты в px
     function initPositions() {
       const r = stage.getBoundingClientRect();
       yesBtn.style.left = (r.width  * 0.35) + "px";
@@ -247,22 +241,7 @@
     });
 
     yesBtn.addEventListener('click', () => showPage('page2'));
-
-    // --- page2: photo selection (опционально) ---
-    const fileInput = document.getElementById('fileInput');
-    const photo = document.getElementById('photo');
-    const againBtn = document.getElementById('againBtn');
-
-    fileInput.addEventListener('change', () => {
-      const file = fileInput.files?.[0];
-      if (!file) return;
-      photo.src = URL.createObjectURL(file);
-    });
-
-    againBtn.addEventListener('click', () => {
-      showPage('page1');
-      msg.textContent = "";
-    });
+    againBtn.addEventListener('click', () => showPage('page1'));
   </script>
 </body>
 </html>
